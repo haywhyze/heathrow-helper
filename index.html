@@ -9,6 +9,9 @@
 <meta name="apple-mobile-web-app-title" content="Heathrow Helper">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="application-name" content="Heathrow Helper">
+<link rel="manifest" href="manifest.json">
+<link rel="apple-touch-icon" href="icon.svg">
+<link rel="icon" type="image/svg+xml" href="icon.svg">
 <title>Mum's Heathrow Helper</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -2295,82 +2298,20 @@
   
   // ============ PWA / OFFLINE SETUP ============
   
-  // 1. Inject Web App Manifest dynamically (so file works as a single artifact)
-  (function setupManifest() {
-    const iconSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="100" fill="%234B286D"/><text x="256" y="350" text-anchor="middle" font-size="280" fill="white" font-family="Arial">✈</text></svg>';
-    const iconUrl = 'data:image/svg+xml,' + encodeURIComponent(iconSvg.replace(/%23/g, '#'));
-    
-    const manifest = {
-      name: "Mum's Heathrow Helper",
-      short_name: "Heathrow Helper",
-      description: "WiFi & arrival guide for Heathrow Terminal 3",
-      start_url: "./",
-      display: "standalone",
-      orientation: "portrait",
-      background_color: "#FAF7FF",
-      theme_color: "#4B286D",
-      icons: [
-        { src: iconUrl, sizes: "192x192", type: "image/svg+xml", purpose: "any" },
-        { src: iconUrl, sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }
-      ]
-    };
-    
-    const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('link');
-    link.rel = 'manifest';
-    link.href = url;
-    document.head.appendChild(link);
-    
-    // Apple touch icon
-    const appleIcon = document.createElement('link');
-    appleIcon.rel = 'apple-touch-icon';
-    appleIcon.href = iconUrl;
-    document.head.appendChild(appleIcon);
-  })();
-  
-  // 2. Register Service Worker for offline caching (works when hosted on a server)
+  // Register Service Worker for offline caching
   if ('serviceWorker' in navigator) {
-    const swCode = `
-      const CACHE = 'heathrow-helper-v1';
-      const ASSETS = ['./', './index.html'];
-      
-      self.addEventListener('install', e => {
-        self.skipWaiting();
-        e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS).catch(() => {})));
-      });
-      
-      self.addEventListener('activate', e => {
-        e.waitUntil(self.clients.claim());
-      });
-      
-      self.addEventListener('fetch', e => {
-        if (e.request.method !== 'GET') return;
-        e.respondWith(
-          caches.match(e.request).then(cached => {
-            return cached || fetch(e.request).then(res => {
-              const copy = res.clone();
-              caches.open(CACHE).then(c => c.put(e.request, copy)).catch(() => {});
-              return res;
-            }).catch(() => caches.match('./'));
-          })
-        );
-      });
-    `;
-    
-    try {
-      const swBlob = new Blob([swCode], { type: 'application/javascript' });
-      const swUrl = URL.createObjectURL(swBlob);
-      navigator.serviceWorker.register(swUrl).catch(() => {
-        // SW registration may fail in iframe contexts (like the artifact preview)
-        // It will work properly when deployed as a standalone site
-      });
-    } catch (err) {
-      // Service worker not supported, continue without it
-    }
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js', { scope: './' })
+        .then(reg => {
+          console.log('SW registered, scope:', reg.scope);
+        })
+        .catch(err => {
+          console.log('SW registration failed:', err);
+        });
+    });
   }
   
-  // 3. Handle install prompt (PWA install)
+  // Handle install prompt (PWA install)
   let deferredPrompt = null;
   
   window.addEventListener('beforeinstallprompt', (e) => {
@@ -2409,13 +2350,12 @@
     } catch (e) {}
   }
   
-  // 4. Install banner click handler
+  // Install banner click handler
   document.getElementById('installBanner').addEventListener('click', async () => {
     const banner = document.getElementById('installBanner');
     if (banner.classList.contains('installed')) return;
     
     if (deferredPrompt) {
-      // Chrome/Android install prompt
       deferredPrompt.prompt();
       const { outcome } = await deferredPrompt.userChoice;
       if (outcome === 'accepted') {
@@ -2423,7 +2363,6 @@
       }
       deferredPrompt = null;
     } else {
-      // Show manual instructions modal (iOS, or browsers without prompt)
       showInstallModal();
     }
   });
