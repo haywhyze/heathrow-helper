@@ -1,0 +1,19 @@
+{
+  "name": "Mum's Heathrow Helper",
+  "short_name": "Heathrow Helper",
+  "description": "WiFi & arrival guide for Heathrow Terminal 3",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FAF7FF",
+  "theme_color": "#4B286D",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
