@@ -1,0 +1,2464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+<meta name="theme-color" content="#4B286D">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Heathrow Helper">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="application-name" content="Heathrow Helper">
+<title>Mum's Heathrow Helper</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  
+  :root {
+    --heathrow-purple: #4B286D;
+    --heathrow-purple-dark: #2E1A45;
+    --heathrow-purple-light: #6B3F94;
+    --heathrow-purple-soft: #F4F0FA;
+    --android-bg: #1D1B20;
+    --android-surface: #2B2930;
+    --android-surface-2: #36343B;
+    --android-on-surface: #E6E0E9;
+    --android-on-surface-variant: #CAC4D0;
+    --android-primary: #D0BCFF;
+    --android-primary-container: #4F378B;
+    --green-customs: #2E8B3D;
+    --red-customs: #D32F2F;
+  }
+  
+  html { font-size: 17px; }
+  
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(180deg, #FAF7FF 0%, #EFE7F8 100%);
+    min-height: 100vh;
+    padding: 20px 16px 40px;
+    color: #1F1A2C;
+    line-height: 1.5;
+  }
+  
+  .container {
+    max-width: 560px;
+    margin: 0 auto;
+  }
+  
+  .view {
+    display: none;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  .view.active { display: flex; }
+  
+  /* ============ HOME VIEW ============ */
+  .home-header {
+    text-align: center;
+    padding: 20px 0 10px;
+  }
+  
+  .home-header h1 {
+    font-size: 32px;
+    color: var(--heathrow-purple);
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    line-height: 1.1;
+    margin-bottom: 10px;
+  }
+  
+  .home-header p {
+    font-size: 18px;
+    color: #6B5F7C;
+    line-height: 1.4;
+  }
+  
+  .home-card {
+    background: white;
+    border-radius: 22px;
+    padding: 24px 22px;
+    box-shadow: 0 6px 24px rgba(75, 40, 109, 0.1);
+    border: 2px solid #EDE5F5;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: left;
+    width: 100%;
+    font-family: inherit;
+    color: inherit;
+  }
+  
+  .home-card:active { transform: scale(0.98); }
+  .home-card:hover { border-color: var(--heathrow-purple); }
+  
+  .home-card-row {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+  
+  .home-card-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+    background: var(--heathrow-purple);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    color: white;
+    flex-shrink: 0;
+  }
+  
+  .home-card-text {
+    flex: 1;
+  }
+  
+  .home-card-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--heathrow-purple);
+    margin-bottom: 4px;
+    line-height: 1.2;
+  }
+  
+  .home-card-desc {
+    font-size: 16px;
+    color: #6B5F7C;
+    line-height: 1.4;
+  }
+  
+  .home-card-arrow {
+    font-size: 28px;
+    color: var(--heathrow-purple);
+    flex-shrink: 0;
+  }
+  
+  /* Quick reference card */
+  .quick-ref {
+    background: var(--heathrow-purple);
+    color: white;
+    border-radius: 22px;
+    padding: 22px;
+  }
+  
+  .quick-ref-title {
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  
+  .quick-ref-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  
+  .quick-ref-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    font-size: 16px;
+    line-height: 1.4;
+  }
+  
+  .quick-ref-icon {
+    width: 30px;
+    height: 30px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 16px;
+  }
+  
+  .quick-ref-text strong { display: block; font-weight: 700; margin-bottom: 2px; font-size: 17px;}
+  .quick-ref-text span { opacity: 0.92; }
+  
+  /* ============ TUTORIAL HEADER ============ */
+  .tut-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 4px;
+  }
+  
+  .home-btn {
+    background: white;
+    border: 2px solid #D9D2E5;
+    color: var(--heathrow-purple);
+    padding: 10px 16px;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  
+  .home-btn:active { background: #F4F0FA; }
+  
+  .tut-title-block {
+    flex: 1;
+    text-align: center;
+  }
+  
+  .tut-title-block h2 {
+    font-size: 20px;
+    color: var(--heathrow-purple);
+    font-weight: 700;
+    line-height: 1.2;
+  }
+  
+  .tut-title-block p {
+    font-size: 14px;
+    color: #6B5F7C;
+  }
+  
+  /* ============ INSTRUCTION PANEL ============ */
+  .instructions {
+    background: white;
+    border-radius: 20px;
+    padding: 22px 24px;
+    box-shadow: 0 4px 20px rgba(75, 40, 109, 0.08);
+    border: 1px solid #EDE5F5;
+  }
+  
+  .step-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+  }
+  
+  .step-badge {
+    background: var(--heathrow-purple);
+    color: white;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 10px;
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+  }
+  
+  .step-time {
+    font-size: 13px;
+    color: var(--heathrow-purple);
+    background: #F4F0FA;
+    padding: 5px 10px;
+    border-radius: 8px;
+    white-space: nowrap;
+    font-weight: 600;
+  }
+  
+  .step-progress {
+    flex: 1;
+    height: 6px;
+    background: #EDE5F5;
+    border-radius: 3px;
+    overflow: hidden;
+    min-width: 80px;
+  }
+  
+  .step-progress-fill {
+    height: 100%;
+    background: var(--heathrow-purple);
+    border-radius: 3px;
+    transition: width 0.4s ease;
+  }
+  
+  .instr-title {
+    font-size: 24px;
+    font-weight: 700;
+    color: #1F1A2C;
+    line-height: 1.25;
+    margin-bottom: 10px;
+  }
+  
+  .instr-body {
+    font-size: 18px;
+    line-height: 1.55;
+    color: #2E2640;
+  }
+  
+  .instr-body strong { color: var(--heathrow-purple); font-weight: 700; }
+  .instr-body .yellow { color: #8B6500; font-weight: 700; background: #FFF8DD; padding: 1px 6px; border-radius: 4px; }
+  .instr-body .green { color: var(--green-customs); font-weight: 700; }
+  .instr-body .red { color: var(--red-customs); font-weight: 700; }
+  
+  .instr-tip {
+    margin-top: 14px;
+    padding: 14px 16px;
+    background: #FFF4E5;
+    border-left: 4px solid #F5A623;
+    border-radius: 8px;
+    font-size: 16px;
+    color: #6B4A00;
+    line-height: 1.5;
+  }
+  
+  .instr-tip.warn {
+    background: #FFEBEE;
+    border-left-color: #D32F2F;
+    color: #8B0000;
+  }
+  
+  /* ============ PHONE FRAME (Pixel 7A) ============ */
+  .phone-wrap {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .phone {
+    position: relative;
+    width: 320px;
+    height: 670px;
+    background: #1A1A1C;
+    border-radius: 38px;
+    padding: 8px;
+    box-shadow: 
+      0 0 0 2px #2A2A2D,
+      0 20px 50px rgba(75, 40, 109, 0.25),
+      0 8px 20px rgba(0,0,0,0.15);
+  }
+  
+  .phone::before {
+    content: '';
+    position: absolute;
+    right: -2px;
+    top: 130px;
+    width: 3px;
+    height: 50px;
+    background: #2A2A2D;
+    border-radius: 0 2px 2px 0;
+  }
+  
+  .phone::after {
+    content: '';
+    position: absolute;
+    right: -2px;
+    top: 200px;
+    width: 3px;
+    height: 80px;
+    background: #2A2A2D;
+    border-radius: 0 2px 2px 0;
+  }
+  
+  .screen {
+    width: 100%;
+    height: 100%;
+    background: var(--android-bg);
+    border-radius: 30px;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .hole-punch {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 10px;
+    height: 10px;
+    background: #000;
+    border-radius: 50%;
+    z-index: 100;
+  }
+  
+  .status-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 18px;
+    font-size: 11px;
+    color: white;
+    font-weight: 500;
+    z-index: 50;
+  }
+  
+  .status-bar.dark { color: #1F1A2C; }
+  .status-time { font-weight: 600; }
+  .status-icons { display: flex; gap: 4px; }
+  
+  .pscene {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  
+  .pscene.active { opacity: 1; pointer-events: auto; }
+  
+  /* Phone scenes */
+  .home-screen {
+    background: linear-gradient(180deg, #4A3B6B 0%, #2D2240 50%, #1A1428 100%);
+    width: 100%;
+    height: 100%;
+    padding-top: 30px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .home-clock {
+    color: white;
+    text-align: center;
+    margin-top: 28px;
+    font-weight: 300;
+  }
+  
+  .home-clock-time { font-size: 64px; line-height: 1; letter-spacing: -2px; }
+  .home-clock-date { font-size: 13px; margin-top: 6px; opacity: 0.85; }
+  
+  .app-grid {
+    margin-top: auto;
+    padding: 0 14px 20px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+  }
+  
+  .app-icon {
+    aspect-ratio: 1;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: white;
+    font-weight: 600;
+  }
+  
+  .app-icon.settings { background: linear-gradient(135deg, #5B6BC0, #3F4C95); }
+  .app-icon.chrome, .app-icon.gmail, .app-icon.maps, .app-icon.photos, .app-icon.youtube { background: white; }
+  .app-icon.phone { background: #34A853; }
+  .app-icon.messages { background: #1A73E8; }
+  
+  .swipe-hint {
+    position: absolute;
+    top: 75px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: white;
+    text-align: center;
+    z-index: 20;
+  }
+  
+  .swipe-hint-arrow {
+    width: 44px;
+    height: 44px;
+    margin: 0 auto 8px;
+    border: 3px solid white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    animation: swipeDown 1.5s ease-in-out infinite;
+  }
+  
+  .swipe-hint-text {
+    font-size: 13px;
+    font-weight: 600;
+    background: rgba(0,0,0,0.6);
+    padding: 5px 12px;
+    border-radius: 12px;
+  }
+  
+  @keyframes swipeDown {
+    0%, 100% { transform: translateY(0); opacity: 1; }
+    50% { transform: translateY(20px); opacity: 0.6; }
+  }
+  
+  .quick-settings {
+    background: rgba(45, 41, 56, 0.98);
+    width: 100%;
+    height: 100%;
+    padding-top: 36px;
+    color: var(--android-on-surface);
+  }
+  
+  .qs-top-row {
+    padding: 8px 18px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--android-on-surface-variant);
+  }
+  
+  .qs-tiles {
+    padding: 14px 16px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+  }
+  
+  .qs-tile {
+    aspect-ratio: 1.6;
+    background: var(--android-surface-2);
+    border-radius: 22px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 6px;
+    cursor: pointer;
+  }
+  
+  .qs-tile.active { background: var(--android-primary); color: #1F1A2C; }
+  .qs-tile-icon { font-size: 18px; }
+  .qs-tile-label { font-size: 9px; font-weight: 500; text-align: center; line-height: 1.1; padding: 0 2px; }
+  
+  .qs-brightness {
+    margin: 12px 18px;
+    height: 38px;
+    background: var(--android-surface-2);
+    border-radius: 19px;
+    display: flex;
+    align-items: center;
+    padding: 0 14px;
+    gap: 10px;
+  }
+  
+  .qs-brightness-bar {
+    flex: 1;
+    height: 6px;
+    background: rgba(208, 188, 255, 0.3);
+    border-radius: 3px;
+    position: relative;
+  }
+  
+  .qs-brightness-bar::after {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 65%;
+    background: var(--android-primary);
+    border-radius: 3px;
+  }
+  
+  .wifi-screen {
+    background: var(--android-bg);
+    width: 100%;
+    height: 100%;
+    padding-top: 34px;
+    color: var(--android-on-surface);
+  }
+  
+  .wifi-header {
+    padding: 14px 18px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  
+  .wifi-back { font-size: 20px; }
+  .wifi-title { font-size: 18px; font-weight: 500; }
+  
+  .wifi-toggle-row {
+    padding: 14px 22px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .wifi-toggle-label { font-size: 14px; font-weight: 500; }
+  
+  .toggle-switch {
+    width: 44px;
+    height: 24px;
+    background: var(--android-primary);
+    border-radius: 12px;
+    position: relative;
+  }
+  
+  .toggle-switch::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: var(--heathrow-purple-dark);
+    border-radius: 50%;
+    top: 2px;
+    right: 2px;
+  }
+  
+  .wifi-section-label {
+    padding: 18px 22px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--android-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+  }
+  
+  .network-list { padding: 0 8px; }
+  
+  .network-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    cursor: pointer;
+  }
+  
+  .network-item:active { background: var(--android-surface); }
+  
+  .network-icon {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .network-icon svg { width: 22px; height: 22px; }
+  .network-info { flex: 1; min-width: 0; }
+  .network-name { font-size: 14px; font-weight: 500; }
+  .network-status { font-size: 12px; color: var(--android-on-surface-variant); margin-top: 2px; }
+  .network-lock { color: var(--android-on-surface-variant); font-size: 12px; }
+  
+  .connecting-screen {
+    background: var(--android-bg);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--android-on-surface);
+    padding-top: 34px;
+  }
+  
+  .connecting-spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid var(--android-surface-2);
+    border-top-color: var(--android-primary);
+    border-radius: 50%;
+    animation: spin 0.9s linear infinite;
+    margin-bottom: 20px;
+  }
+  
+  @keyframes spin { to { transform: rotate(360deg); } }
+  
+  .connecting-text { font-size: 15px; font-weight: 500; }
+  .connecting-subtext { font-size: 13px; color: var(--android-on-surface-variant); margin-top: 6px; }
+  
+  .captive-screen {
+    background: white;
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    padding-top: 30px;
+  }
+  
+  .chrome-bar {
+    background: #F1F3F4;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 11px;
+    color: #5F6368;
+    border-bottom: 1px solid #E0E0E0;
+  }
+  
+  .chrome-url {
+    flex: 1;
+    background: white;
+    padding: 5px 10px;
+    border-radius: 14px;
+    font-size: 11px;
+    color: #1F1F1F;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  
+  .heathrow-header {
+    background: var(--heathrow-purple);
+    padding: 22px 20px 18px;
+    color: white;
+  }
+  
+  .heathrow-logo {
+    font-size: 24px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .heathrow-logo-mark {
+    width: 28px;
+    height: 28px;
+    background: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--heathrow-purple);
+    font-size: 16px;
+  }
+  
+  .heathrow-tagline {
+    font-size: 11px;
+    opacity: 0.85;
+    margin-top: 4px;
+    font-style: italic;
+  }
+  
+  .captive-body { padding: 22px 20px; }
+  
+  .captive-welcome {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1F1A2C;
+    line-height: 1.3;
+    margin-bottom: 8px;
+  }
+  
+  .captive-subtitle {
+    font-size: 13px;
+    color: #4A4154;
+    line-height: 1.5;
+    margin-bottom: 18px;
+  }
+  
+  .captive-network {
+    background: var(--heathrow-purple-soft);
+    border-radius: 10px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 18px;
+    font-size: 12px;
+  }
+  
+  .captive-network-name { font-weight: 600; color: var(--heathrow-purple); }
+  
+  .form-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #4A4154;
+    margin-bottom: 6px;
+  }
+  
+  .form-input {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1.5px solid #D9D2E5;
+    border-radius: 10px;
+    font-size: 13px;
+    background: white;
+    margin-bottom: 16px;
+    font-family: inherit;
+  }
+  
+  .checkbox-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 18px;
+  }
+  
+  .checkbox {
+    width: 20px;
+    height: 20px;
+    border: 1.5px solid #D9D2E5;
+    border-radius: 4px;
+    flex-shrink: 0;
+    margin-top: 1px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+  }
+  
+  .checkbox.checked { background: var(--heathrow-purple); border-color: var(--heathrow-purple); }
+  .checkbox.checked::after { content: '✓'; color: white; font-size: 13px; font-weight: bold; }
+  .checkbox-label { font-size: 12px; color: #4A4154; line-height: 1.4; }
+  
+  .connect-btn {
+    width: 100%;
+    background: var(--heathrow-purple);
+    color: white;
+    border: none;
+    padding: 13px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 600;
+    font-family: inherit;
+  }
+  
+  .connect-btn:disabled { background: #C5BBD3; }
+  
+  .alt-login {
+    text-align: center;
+    margin-top: 14px;
+    font-size: 11px;
+    color: #6B5F7C;
+  }
+  
+  .success-screen {
+    background: white;
+    width: 100%;
+    height: 100%;
+    padding-top: 30px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .success-body {
+    padding: 40px 24px 24px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .success-icon {
+    width: 80px;
+    height: 80px;
+    background: var(--heathrow-purple);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 42px;
+    margin-bottom: 20px;
+    animation: popIn 0.5s ease;
+  }
+  
+  @keyframes popIn {
+    0% { transform: scale(0); }
+    60% { transform: scale(1.15); }
+    100% { transform: scale(1); }
+  }
+  
+  .success-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--heathrow-purple);
+    margin-bottom: 10px;
+  }
+  
+  .success-text {
+    font-size: 14px;
+    color: #4A4154;
+    line-height: 1.5;
+    margin-bottom: 22px;
+    max-width: 260px;
+  }
+  
+  .success-info {
+    background: var(--heathrow-purple-soft);
+    padding: 14px 18px;
+    border-radius: 12px;
+    width: 100%;
+    text-align: left;
+    margin-top: auto;
+  }
+  
+  .success-info-title {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--heathrow-purple);
+    margin-bottom: 6px;
+  }
+  
+  .success-info-text { font-size: 12px; color: #4A4154; line-height: 1.5; }
+  
+  .highlight {
+    position: relative;
+    z-index: 5;
+  }
+  
+  .highlight::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
+    border-radius: inherit;
+    border: 3px solid #FFC107;
+    box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7);
+    animation: pulse 1.6s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 10;
+  }
+  
+  @keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0.7); }
+    70% { box-shadow: 0 0 0 12px rgba(255, 193, 7, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 193, 7, 0); }
+  }
+  
+  /* ============ AIRPORT SCENE FRAME ============ */
+  .scene-frame {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(75, 40, 109, 0.1);
+    border: 1px solid #EDE5F5;
+    aspect-ratio: 16/11;
+    position: relative;
+  }
+  
+  .ascene {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+  }
+  
+  .ascene.active { opacity: 1; pointer-events: auto; }
+  .ascene svg { width: 100%; height: 100%; display: block; }
+  
+  .scene-caption {
+    position: absolute;
+    bottom: 12px;
+    left: 12px;
+    right: 12px;
+    background: rgba(75, 40, 109, 0.94);
+    color: white;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+  }
+  
+  /* ============ MINI MAP ============ */
+  .mini-map {
+    background: white;
+    border-radius: 16px;
+    padding: 16px 18px;
+    box-shadow: 0 2px 10px rgba(75, 40, 109, 0.06);
+    border: 1px solid #EDE5F5;
+  }
+  
+  .mini-map-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #6B5F7C;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 12px;
+  }
+  
+  .map-flow {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+  }
+  
+  .map-flow::-webkit-scrollbar { height: 0; }
+  
+  .map-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+    min-width: 60px;
+    cursor: pointer;
+  }
+  
+  .map-dot {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #EDE5F5;
+    color: #9B8FAB;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+  }
+  
+  .map-node.done .map-dot { background: var(--heathrow-purple); color: white; }
+  .map-node.current .map-dot {
+    background: white;
+    color: var(--heathrow-purple);
+    border-color: var(--heathrow-purple);
+    box-shadow: 0 0 0 3px rgba(75, 40, 109, 0.2);
+    animation: nodepulse 1.6s ease-in-out infinite;
+  }
+  
+  @keyframes nodepulse {
+    0%, 100% { box-shadow: 0 0 0 3px rgba(75, 40, 109, 0.2); }
+    50% { box-shadow: 0 0 0 7px rgba(75, 40, 109, 0.1); }
+  }
+  
+  .map-label {
+    font-size: 11px;
+    color: #6B5F7C;
+    text-align: center;
+    line-height: 1.2;
+    max-width: 60px;
+    font-weight: 500;
+  }
+  
+  .map-node.current .map-label,
+  .map-node.done .map-label {
+    color: var(--heathrow-purple);
+    font-weight: 700;
+  }
+  
+  .map-line {
+    flex: 1;
+    height: 2px;
+    background: #EDE5F5;
+    margin-bottom: 24px;
+    min-width: 8px;
+  }
+  
+  .map-line.done { background: var(--heathrow-purple); }
+  
+  /* ============ HELP BANNER ============ */
+  .help-banner {
+    background: var(--heathrow-purple);
+    color: white;
+    padding: 14px 18px;
+    border-radius: 14px;
+    font-size: 15px;
+    line-height: 1.5;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+  
+  .help-banner-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 18px;
+  }
+  
+  .help-banner strong { display: block; margin-bottom: 3px; font-weight: 700; font-size: 16px; }
+  
+  /* ============ NAVIGATION ============ */
+  .nav {
+    display: flex;
+    gap: 10px;
+  }
+  
+  .nav-btn {
+    flex: 1;
+    padding: 16px;
+    border: none;
+    border-radius: 14px;
+    font-size: 17px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s ease;
+  }
+  
+  .nav-btn.primary {
+    background: var(--heathrow-purple);
+    color: white;
+    flex: 2;
+  }
+  
+  .nav-btn.primary:active { background: var(--heathrow-purple-dark); }
+  
+  .nav-btn.secondary {
+    background: white;
+    color: var(--heathrow-purple);
+    border: 2px solid #D9D2E5;
+  }
+  
+  .nav-btn.secondary:active { background: #F4F0FA; }
+  .nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  
+  .footer-note {
+    font-size: 14px;
+    color: #6B5F7C;
+    text-align: center;
+    line-height: 1.5;
+  }
+  
+  /* Offline / install banner */
+  .offline-banner {
+    background: white;
+    border: 2px solid var(--heathrow-purple);
+    border-radius: 16px;
+    padding: 16px 18px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  
+  .offline-banner:active { transform: scale(0.98); }
+  
+  .offline-banner.installed {
+    background: linear-gradient(135deg, #2E8B3D, #1F6B2A);
+    border-color: #2E8B3D;
+    color: white;
+    cursor: default;
+  }
+  
+  .offline-banner-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: var(--heathrow-purple);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    color: white;
+    flex-shrink: 0;
+  }
+  
+  .offline-banner.installed .offline-banner-icon {
+    background: rgba(255,255,255,0.2);
+  }
+  
+  .offline-banner-text { flex: 1; }
+  .offline-banner-title { font-size: 16px; font-weight: 700; color: var(--heathrow-purple); margin-bottom: 2px; }
+  .offline-banner.installed .offline-banner-title { color: white; }
+  .offline-banner-desc { font-size: 13px; color: #6B5F7C; line-height: 1.4; }
+  .offline-banner.installed .offline-banner-desc { color: rgba(255,255,255,0.9); }
+  .offline-banner-arrow { font-size: 20px; color: var(--heathrow-purple); }
+  .offline-banner.installed .offline-banner-arrow { display: none; }
+  
+  /* Install instructions modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(31, 26, 44, 0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+  }
+  
+  .modal-overlay.active { display: flex; }
+  
+  .modal {
+    background: white;
+    border-radius: 22px;
+    padding: 24px;
+    max-width: 440px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  
+  .modal h2 {
+    color: var(--heathrow-purple);
+    font-size: 22px;
+    margin-bottom: 8px;
+  }
+  
+  .modal p {
+    font-size: 16px;
+    color: #4A4154;
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+  
+  .modal-steps {
+    background: var(--heathrow-purple-soft);
+    border-radius: 14px;
+    padding: 16px 18px;
+    margin-bottom: 16px;
+  }
+  
+  .modal-step {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    margin-bottom: 12px;
+    font-size: 15px;
+    line-height: 1.4;
+  }
+  
+  .modal-step:last-child { margin-bottom: 0; }
+  
+  .modal-step-num {
+    width: 24px;
+    height: 24px;
+    background: var(--heathrow-purple);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  
+  .modal-close {
+    width: 100%;
+    background: var(--heathrow-purple);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 14px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  
+  /* ============ RESPONSIVE ============ */
+  @media (max-width: 380px) {
+    html { font-size: 16px; }
+    .home-header h1 { font-size: 28px; }
+    .instr-title { font-size: 22px; }
+    .instr-body { font-size: 17px; }
+    .phone { width: 290px; height: 605px; }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    
+    <!-- ============ HOME VIEW ============ -->
+    <div class="view active" id="view-home">
+      <div class="home-header">
+        <h1>Mum's Heathrow Helper</h1>
+        <p>Two simple guides to help you arrive easily</p>
+      </div>
+      
+      <button class="home-card" data-go="wifi">
+        <div class="home-card-row">
+          <div class="home-card-icon">📶</div>
+          <div class="home-card-text">
+            <div class="home-card-title">Connect to WiFi</div>
+            <div class="home-card-desc">Step-by-step guide to free WiFi at the airport</div>
+          </div>
+          <div class="home-card-arrow">→</div>
+        </div>
+      </button>
+      
+      <button class="home-card" data-go="airport">
+        <div class="home-card-row">
+          <div class="home-card-icon">✈</div>
+          <div class="home-card-text">
+            <div class="home-card-title">Walking Through Terminal 3</div>
+            <div class="home-card-desc">From the plane to meeting Fatima &amp; Nasirudeen</div>
+          </div>
+          <div class="home-card-arrow">→</div>
+        </div>
+      </button>
+      
+      <div class="quick-ref">
+        <div class="quick-ref-title">⚡ Things to remember</div>
+        <div class="quick-ref-list">
+          <div class="quick-ref-item">
+            <div class="quick-ref-icon">🟡</div>
+            <div class="quick-ref-text">
+              <strong>Yellow signs only</strong>
+              <span>Yellow = arrivals. Purple signs = transfers (not for you)</span>
+            </div>
+          </div>
+          <div class="quick-ref-item">
+            <div class="quick-ref-icon">💜</div>
+            <div class="quick-ref-text">
+              <strong>Lost? Find purple shirts</strong>
+              <span>Heathrow staff wear purple. Just say "I need help"</span>
+            </div>
+          </div>
+          <div class="quick-ref-item">
+            <div class="quick-ref-icon">🛒</div>
+            <div class="quick-ref-text">
+              <strong>Trolleys are FREE</strong>
+              <span>Never pay anyone for a trolley at Heathrow</span>
+            </div>
+          </div>
+          <div class="quick-ref-item">
+            <div class="quick-ref-icon">🟢</div>
+            <div class="quick-ref-text">
+              <strong>Green channel at customs</strong>
+              <span>Walk through the green path. Don't stop unless asked</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="offline-banner" id="installBanner">
+        <div class="offline-banner-icon">📲</div>
+        <div class="offline-banner-text">
+          <div class="offline-banner-title" id="installTitle">Save for offline use</div>
+          <div class="offline-banner-desc" id="installDesc">Add to home screen so it works without internet</div>
+        </div>
+        <div class="offline-banner-arrow">→</div>
+      </div>
+      
+      <div class="footer-note">
+        Made with love by Yusuf · Tap a guide above to begin
+      </div>
+    </div>
+    
+    <!-- ============ WIFI TUTORIAL VIEW ============ -->
+    <div class="view" id="view-wifi">
+      <div class="tut-header">
+        <button class="home-btn" data-go="home">← Home</button>
+        <div class="tut-title-block">
+          <h2>WiFi Tutorial</h2>
+          <p>Practice on the phone below</p>
+        </div>
+      </div>
+      
+      <div class="instructions">
+        <div class="step-row">
+          <div class="step-badge" id="wifiStepBadge">Step 1 of 7</div>
+          <div class="step-progress">
+            <div class="step-progress-fill" id="wifiStepProgress"></div>
+          </div>
+        </div>
+        <div class="instr-title" id="wifiInstrTitle">Welcome</div>
+        <div class="instr-body" id="wifiInstrBody">Loading...</div>
+        <div class="instr-tip" id="wifiInstrTip" style="display: none"></div>
+      </div>
+      
+      <div class="phone-wrap">
+        <div class="phone">
+          <div class="screen">
+            <div class="hole-punch"></div>
+            
+            <!-- HOME -->
+            <div class="pscene" id="pscene-home">
+              <div class="status-bar">
+                <span class="status-time">10:42</span>
+                <span class="status-icons"><span>📶</span><span>🔋</span></span>
+              </div>
+              <div class="home-screen">
+                <div class="home-clock">
+                  <div class="home-clock-time">10:42</div>
+                  <div class="home-clock-date">Friday, 8 May</div>
+                </div>
+                <div class="app-grid">
+                  <div class="app-icon settings">⚙</div>
+                  <div class="app-icon chrome">
+                    <svg width="24" height="24" viewBox="0 0 48 48"><circle cx="24" cy="24" r="22" fill="#fff"/><circle cx="24" cy="24" r="8" fill="#4285F4"/><path d="M24 2 A22 22 0 0 1 43.05 13 L24 24 Z" fill="#EA4335"/><path d="M43.05 13 A22 22 0 0 1 43.05 35 L24 24 Z" fill="#FBBC04"/><path d="M43.05 35 A22 22 0 0 1 4.95 35 L24 24 Z" fill="#34A853"/><circle cx="24" cy="24" r="6" fill="#fff"/><circle cx="24" cy="24" r="5" fill="#4285F4"/></svg>
+                  </div>
+                  <div class="app-icon gmail" style="font-size: 18px; color: #EA4335;">M</div>
+                  <div class="app-icon maps" style="color: #4285F4;">📍</div>
+                  <div class="app-icon phone">📞</div>
+                  <div class="app-icon messages">💬</div>
+                  <div class="app-icon photos" style="color: #4285F4;">🖼</div>
+                  <div class="app-icon youtube" style="color: #FF0000;">▶</div>
+                </div>
+              </div>
+              <div class="swipe-hint" id="swipeHint" style="display: none">
+                <div class="swipe-hint-arrow">↓</div>
+                <div class="swipe-hint-text">Swipe down from the top</div>
+              </div>
+            </div>
+            
+            <!-- QUICK SETTINGS -->
+            <div class="pscene" id="pscene-quicksettings">
+              <div class="status-bar">
+                <span class="status-time">10:42</span>
+                <span class="status-icons"><span>📶</span><span>🔋</span></span>
+              </div>
+              <div class="quick-settings">
+                <div class="qs-top-row"><span>Friday, 8 May</span><span>⚙ ⏻</span></div>
+                <div class="qs-tiles">
+                  <div class="qs-tile active" id="qs-internet">
+                    <div class="qs-tile-icon">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21l3.6-4.5c-1-.78-2.26-1.25-3.6-1.25s-2.6.47-3.6 1.25L12 21zm6-7.5l1.81-2.27C17.55 9.45 14.89 8.25 12 8.25s-5.55 1.2-7.81 2.98L6 13.5C7.66 12.18 9.74 11.25 12 11.25s4.34.93 6 2.25zM12 3C7.95 3 4.21 4.34 1.2 6.6L3 8.85C5.5 6.95 8.62 5.75 12 5.75s6.5 1.2 9 3.1L22.8 6.6C19.79 4.34 16.05 3 12 3z"/></svg>
+                    </div>
+                    <div class="qs-tile-label">Internet</div>
+                  </div>
+                  <div class="qs-tile"><div class="qs-tile-icon">📶</div><div class="qs-tile-label">Bluetooth</div></div>
+                  <div class="qs-tile"><div class="qs-tile-icon">🔇</div><div class="qs-tile-label">Do Not Disturb</div></div>
+                  <div class="qs-tile"><div class="qs-tile-icon">🔦</div><div class="qs-tile-label">Flashlight</div></div>
+                  <div class="qs-tile"><div class="qs-tile-icon">✈</div><div class="qs-tile-label">Airplane mode</div></div>
+                  <div class="qs-tile"><div class="qs-tile-icon">🌙</div><div class="qs-tile-label">Dark theme</div></div>
+                  <div class="qs-tile"><div class="qs-tile-icon">🔄</div><div class="qs-tile-label">Auto-rotate</div></div>
+                  <div class="qs-tile"><div class="qs-tile-icon">📍</div><div class="qs-tile-label">Location</div></div>
+                </div>
+                <div class="qs-brightness">
+                  <span style="color: var(--android-on-surface-variant); font-size: 14px;">☀</span>
+                  <div class="qs-brightness-bar"></div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- WIFI LIST -->
+            <div class="pscene" id="pscene-wifi">
+              <div class="status-bar">
+                <span class="status-time">10:42</span>
+                <span class="status-icons"><span>📶</span><span>🔋</span></span>
+              </div>
+              <div class="wifi-screen">
+                <div class="wifi-header">
+                  <span class="wifi-back">←</span>
+                  <span class="wifi-title">Internet</span>
+                </div>
+                <div class="wifi-toggle-row">
+                  <span class="wifi-toggle-label">Wi-Fi</span>
+                  <div class="toggle-switch"></div>
+                </div>
+                <div class="wifi-section-label">Available networks</div>
+                <div class="network-list">
+                  <div class="network-item" id="net-heathrow">
+                    <div class="network-icon">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21l3.6-4.5c-1-.78-2.26-1.25-3.6-1.25s-2.6.47-3.6 1.25L12 21zm6-7.5l1.81-2.27C17.55 9.45 14.89 8.25 12 8.25s-5.55 1.2-7.81 2.98L6 13.5C7.66 12.18 9.74 11.25 12 11.25s4.34.93 6 2.25zM12 3C7.95 3 4.21 4.34 1.2 6.6L3 8.85C5.5 6.95 8.62 5.75 12 5.75s6.5 1.2 9 3.1L22.8 6.6C19.79 4.34 16.05 3 12 3z"/></svg>
+                    </div>
+                    <div class="network-info">
+                      <div class="network-name">_Heathrow Wi-Fi</div>
+                      <div class="network-status">Open · Sign-in required</div>
+                    </div>
+                  </div>
+                  <div class="network-item">
+                    <div class="network-icon">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21l3.6-4.5c-1-.78-2.26-1.25-3.6-1.25s-2.6.47-3.6 1.25L12 21zm6-7.5l1.81-2.27C17.55 9.45 14.89 8.25 12 8.25s-5.55 1.2-7.81 2.98L6 13.5C7.66 12.18 9.74 11.25 12 11.25s4.34.93 6 2.25zM12 3C7.95 3 4.21 4.34 1.2 6.6L3 8.85C5.5 6.95 8.62 5.75 12 5.75s6.5 1.2 9 3.1L22.8 6.6C19.79 4.34 16.05 3 12 3z"/></svg>
+                    </div>
+                    <div class="network-info">
+                      <div class="network-name">HeathrowWifi</div>
+                      <div class="network-status">Open network</div>
+                    </div>
+                  </div>
+                  <div class="network-item">
+                    <div class="network-icon">🔒</div>
+                    <div class="network-info">
+                      <div class="network-name">BA-Lounge</div>
+                      <div class="network-status">Saved</div>
+                    </div>
+                    <span class="network-lock">🔒</span>
+                  </div>
+                  <div class="network-item">
+                    <div class="network-icon">
+                      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 21l3.6-4.5c-1-.78-2.26-1.25-3.6-1.25s-2.6.47-3.6 1.25L12 21zm6-7.5l1.81-2.27C17.55 9.45 14.89 8.25 12 8.25s-5.55 1.2-7.81 2.98L6 13.5C7.66 12.18 9.74 11.25 12 11.25s4.34.93 6 2.25zM12 3C7.95 3 4.21 4.34 1.2 6.6L3 8.85C5.5 6.95 8.62 5.75 12 5.75s6.5 1.2 9 3.1L22.8 6.6C19.79 4.34 16.05 3 12 3z"/></svg>
+                    </div>
+                    <div class="network-info">
+                      <div class="network-name">Free_Public_WiFi</div>
+                      <div class="network-status">Open network</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- CONNECTING -->
+            <div class="pscene" id="pscene-connecting">
+              <div class="status-bar">
+                <span class="status-time">10:43</span>
+                <span class="status-icons"><span>📶</span><span>🔋</span></span>
+              </div>
+              <div class="connecting-screen">
+                <div class="connecting-spinner"></div>
+                <div class="connecting-text">Connecting to _Heathrow Wi-Fi...</div>
+                <div class="connecting-subtext">Opening sign-in page</div>
+              </div>
+            </div>
+            
+            <!-- CAPTIVE PORTAL -->
+            <div class="pscene" id="pscene-captive">
+              <div class="status-bar dark">
+                <span class="status-time">10:43</span>
+                <span class="status-icons"><span>📶</span><span>🔋</span></span>
+              </div>
+              <div class="captive-screen">
+                <div class="chrome-bar">
+                  <span>←</span>
+                  <div class="chrome-url"><span>🔒</span>wifi.heathrow.com</div>
+                  <span>⋮</span>
+                </div>
+                <div class="heathrow-header">
+                  <div class="heathrow-logo">
+                    <div class="heathrow-logo-mark">✈</div>
+                    <div>
+                      <div>Heathrow</div>
+                      <div class="heathrow-tagline">Making every journey better</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="captive-body">
+                  <div class="captive-welcome">Welcome to free Wi-Fi</div>
+                  <div class="captive-subtitle">Sign in to enjoy free, unlimited Wi-Fi for the duration of your stay at Heathrow.</div>
+                  <div class="captive-network">
+                    <span>📡</span>
+                    <div>Connected to <span class="captive-network-name">_Heathrow Wi-Fi</span></div>
+                  </div>
+                  <label class="form-label">Email address</label>
+                  <input type="email" class="form-input" id="emailInput" placeholder="your@email.com" readonly>
+                  <div class="checkbox-row">
+                    <div class="checkbox" id="termsCheckbox"></div>
+                    <div class="checkbox-label">I accept the Terms and Conditions and Heathrow's privacy policy.</div>
+                  </div>
+                  <button class="connect-btn" id="connectBtn" disabled>Connect</button>
+                  <div class="alt-login">Or sign in with Google · Facebook</div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- SUCCESS -->
+            <div class="pscene" id="pscene-success">
+              <div class="status-bar dark">
+                <span class="status-time">10:44</span>
+                <span class="status-icons"><span>📶</span><span>🔋</span></span>
+              </div>
+              <div class="success-screen">
+                <div class="chrome-bar">
+                  <span>←</span>
+                  <div class="chrome-url"><span>🔒</span>wifi.heathrow.com</div>
+                  <span>⋮</span>
+                </div>
+                <div class="success-body">
+                  <div class="success-icon">✓</div>
+                  <div class="success-title">You're online!</div>
+                  <div class="success-text">Free Wi-Fi is now active. You can browse, message family, and use apps as normal.</div>
+                  <div class="success-info">
+                    <div class="success-info-title">⏱ Session info</div>
+                    <div class="success-info-text">Free Wi-Fi lasts up to 4 hours. If you get disconnected, just open WhatsApp or Chrome and sign in again.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="nav">
+        <button class="nav-btn secondary" id="wifiBackBtn">← Back</button>
+        <button class="nav-btn primary" id="wifiNextBtn">Next →</button>
+        <button class="nav-btn secondary" id="wifiRestartBtn" style="flex: 0.6">↻</button>
+      </div>
+    </div>
+    
+    <!-- ============ AIRPORT TUTORIAL VIEW ============ -->
+    <div class="view" id="view-airport">
+      <div class="tut-header">
+        <button class="home-btn" data-go="home">← Home</button>
+        <div class="tut-title-block">
+          <h2>Walking Through Terminal 3</h2>
+          <p>From the plane to your family</p>
+        </div>
+      </div>
+      
+      <div class="instructions">
+        <div class="step-row">
+          <div class="step-badge" id="airStepBadge">Step 1 of 8</div>
+          <div class="step-time" id="airStepTime">⏱ 5 min</div>
+          <div class="step-progress">
+            <div class="step-progress-fill" id="airStepProgress"></div>
+          </div>
+        </div>
+        <div class="instr-title" id="airInstrTitle">Loading...</div>
+        <div class="instr-body" id="airInstrBody">Loading...</div>
+        <div class="instr-tip" id="airInstrTip" style="display: none"></div>
+      </div>
+      
+      <div class="scene-frame">
+        
+        <!-- Scene 1: Plane -->
+        <div class="ascene" id="ascene-1">
+          <svg viewBox="0 0 800 550" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="sky1" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#FCD9A8"/>
+                <stop offset="60%" stop-color="#9B7BB8"/>
+                <stop offset="100%" stop-color="#4B286D"/>
+              </linearGradient>
+            </defs>
+            <rect width="800" height="550" fill="url(#sky1)"/>
+            <rect y="380" width="800" height="170" fill="#2A2438"/>
+            <g stroke="#FFD400" stroke-width="3" stroke-dasharray="20,15">
+              <line x1="0" y1="430" x2="800" y2="430"/>
+              <line x1="0" y1="490" x2="800" y2="490"/>
+            </g>
+            <rect x="0" y="240" width="350" height="160" fill="#3D2D5A" rx="4"/>
+            <rect x="20" y="270" width="40" height="50" fill="#FFE680" rx="2"/>
+            <rect x="80" y="270" width="40" height="50" fill="#FFE680" rx="2"/>
+            <rect x="140" y="270" width="40" height="50" fill="#9B8FAB" rx="2"/>
+            <rect x="200" y="270" width="40" height="50" fill="#FFE680" rx="2"/>
+            <rect x="260" y="270" width="40" height="50" fill="#FFE680" rx="2"/>
+            <text x="60" y="225" font-family="Arial" font-size="22" font-weight="700" fill="white">TERMINAL 3</text>
+            <rect x="350" y="335" width="120" height="35" fill="#5A4475" rx="4"/>
+            <rect x="350" y="335" width="120" height="6" fill="#7A5F95" rx="3"/>
+            <ellipse cx="600" cy="360" rx="170" ry="32" fill="white" stroke="#D0C5E0" stroke-width="1.5"/>
+            <g fill="#4B286D">
+              <circle cx="490" cy="358" r="3"/><circle cx="510" cy="358" r="3"/><circle cx="530" cy="358" r="3"/>
+              <circle cx="550" cy="358" r="3"/><circle cx="570" cy="358" r="3"/><circle cx="590" cy="358" r="3"/>
+              <circle cx="610" cy="358" r="3"/><circle cx="630" cy="358" r="3"/><circle cx="650" cy="358" r="3"/>
+              <circle cx="670" cy="358" r="3"/><circle cx="690" cy="358" r="3"/>
+            </g>
+            <polygon points="745,360 770,310 770,365" fill="white" stroke="#D0C5E0" stroke-width="1.5"/>
+            <rect x="755" y="320" width="12" height="30" fill="#4B286D"/>
+            <polygon points="560,375 700,375 680,395 580,395" fill="#E8DFF5" stroke="#D0C5E0" stroke-width="1"/>
+            <g>
+              <rect x="200" y="60" width="400" height="90" fill="white" rx="14" opacity="0.95"/>
+              <text x="400" y="98" text-anchor="middle" font-family="Arial" font-size="26" font-weight="700" fill="#4B286D">✈ You've landed at Heathrow</text>
+              <text x="400" y="128" text-anchor="middle" font-family="Arial" font-size="16" fill="#6B5F7C">Terminal 3 · Welcome to London</text>
+            </g>
+          </svg>
+          <div class="scene-caption">Stay seated until the seatbelt sign is off</div>
+        </div>
+        
+        <!-- Scene 2: Yellow vs Purple -->
+        <div class="ascene" id="ascene-2">
+          <svg viewBox="0 0 800 550" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="corridor" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#F4F0FA"/>
+                <stop offset="100%" stop-color="#E0D4ED"/>
+              </linearGradient>
+            </defs>
+            <rect width="800" height="550" fill="url(#corridor)"/>
+            <polygon points="0,550 800,550 600,350 200,350" fill="#C5B5D5"/>
+            <polygon points="200,350 600,350 480,330 320,330" fill="#A892C0"/>
+            <polygon points="0,0 0,550 200,350 200,330" fill="#E8DFF5"/>
+            <polygon points="800,0 800,550 600,350 600,330" fill="#E8DFF5"/>
+            <polygon points="0,0 800,0 600,330 200,330" fill="#F4F0FA"/>
+            <g>
+              <rect x="60" y="100" width="280" height="120" fill="#FFD400" rx="6" stroke="#1F1A2C" stroke-width="3"/>
+              <text x="200" y="148" text-anchor="middle" font-family="Arial" font-size="32" font-weight="800" fill="#1F1A2C">ARRIVALS</text>
+              <text x="200" y="180" text-anchor="middle" font-family="Arial" font-size="20" font-weight="600" fill="#1F1A2C">Baggage · UK Border</text>
+              <text x="200" y="206" text-anchor="middle" font-family="Arial" font-size="32" font-weight="800" fill="#1F1A2C">→</text>
+              <rect x="55" y="95" width="290" height="130" fill="none" stroke="#2E8B3D" stroke-width="4" rx="8" stroke-dasharray="6,4">
+                <animate attributeName="stroke-dashoffset" from="0" to="20" dur="1s" repeatCount="indefinite"/>
+              </rect>
+              <text x="200" y="80" text-anchor="middle" font-family="Arial" font-size="16" font-weight="700" fill="#2E8B3D">✓ FOLLOW THIS</text>
+            </g>
+            <g opacity="0.85">
+              <rect x="460" y="100" width="280" height="120" fill="#4B286D" rx="6" stroke="#1F1A2C" stroke-width="3"/>
+              <text x="600" y="146" text-anchor="middle" font-family="Arial" font-size="22" font-weight="800" fill="white">FLIGHT</text>
+              <text x="600" y="172" text-anchor="middle" font-family="Arial" font-size="22" font-weight="800" fill="white">CONNECTIONS</text>
+              <text x="600" y="200" text-anchor="middle" font-family="Arial" font-size="14" font-weight="600" fill="white">For transfers only</text>
+              <circle cx="600" cy="100" r="22" fill="#D32F2F"/>
+              <text x="600" y="110" text-anchor="middle" font-family="Arial" font-size="26" font-weight="900" fill="white">✕</text>
+              <text x="600" y="80" text-anchor="middle" font-family="Arial" font-size="16" font-weight="700" fill="#D32F2F">DON'T FOLLOW</text>
+            </g>
+            <g transform="translate(380, 380)">
+              <circle cx="0" cy="-40" r="14" fill="#F5C699"/>
+              <rect x="-12" y="-26" width="24" height="40" fill="#5B6BC0" rx="3"/>
+              <rect x="-14" y="14" width="10" height="22" fill="#3F4C95" rx="2"/>
+              <rect x="4" y="14" width="10" height="22" fill="#3F4C95" rx="2"/>
+            </g>
+          </svg>
+          <div class="scene-caption">Yellow = arrivals · Purple = transfers · Always follow YELLOW</div>
+        </div>
+        
+        <!-- Scene 3: UK Border -->
+        <div class="ascene" id="ascene-3">
+          <svg viewBox="0 0 800 550" xmlns="http://www.w3.org/2000/svg">
+            <rect width="800" height="550" fill="#F4F0FA"/>
+            <rect y="450" width="800" height="100" fill="#D0C5E0"/>
+            <rect x="200" y="40" width="400" height="70" fill="#1F1A2C" rx="6"/>
+            <text x="400" y="78" text-anchor="middle" font-family="Arial" font-size="24" font-weight="700" fill="white">🇬🇧 UK BORDER</text>
+            <text x="400" y="100" text-anchor="middle" font-family="Arial" font-size="14" fill="#FFD400">Passport Control</text>
+            <text x="200" y="148" text-anchor="middle" font-family="Arial" font-size="14" font-weight="700" fill="#4B286D">eGATES (chip passport)</text>
+            <text x="600" y="148" text-anchor="middle" font-family="Arial" font-size="14" font-weight="700" fill="#4B286D">OFFICER LANE</text>
+            <g>
+              <rect x="80" y="170" width="60" height="180" fill="white" stroke="#9B8FAB" stroke-width="2" rx="6"/>
+              <rect x="88" y="180" width="44" height="50" fill="#1F1A2C" rx="3"/>
+              <circle cx="110" cy="205" r="8" fill="#2E8B3D"/>
+              <rect x="92" y="240" width="36" height="6" fill="#FFD400"/>
+              <rect x="160" y="170" width="60" height="180" fill="white" stroke="#9B8FAB" stroke-width="2" rx="6"/>
+              <rect x="168" y="180" width="44" height="50" fill="#1F1A2C" rx="3"/>
+              <circle cx="190" cy="205" r="8" fill="#2E8B3D"/>
+              <rect x="172" y="240" width="36" height="6" fill="#FFD400"/>
+              <rect x="240" y="170" width="60" height="180" fill="white" stroke="#9B8FAB" stroke-width="2" rx="6"/>
+              <rect x="248" y="180" width="44" height="50" fill="#1F1A2C" rx="3"/>
+              <circle cx="270" cy="205" r="8" fill="#2E8B3D"/>
+              <rect x="252" y="240" width="36" height="6" fill="#FFD400"/>
+            </g>
+            <g>
+              <rect x="500" y="200" width="200" height="100" fill="#5A4475" rx="6"/>
+              <rect x="510" y="180" width="180" height="30" fill="#3D2D5A" rx="4"/>
+              <text x="600" y="200" text-anchor="middle" font-family="Arial" font-size="13" font-weight="600" fill="white">OFFICER</text>
+              <circle cx="600" cy="170" r="14" fill="#F5C699"/>
+              <rect x="588" y="155" width="24" height="6" fill="#1F1A2C"/>
+              <text x="600" y="340" text-anchor="middle" font-family="Arial" font-size="15" font-weight="600" fill="#4B286D">↑ Queue here</text>
+              <rect x="495" y="195" width="210" height="155" fill="none" stroke="#2E8B3D" stroke-width="3" rx="8" stroke-dasharray="6,4">
+                <animate attributeName="stroke-dashoffset" from="0" to="20" dur="1s" repeatCount="indefinite"/>
+              </rect>
+            </g>
+            <g>
+              <rect x="60" y="380" width="680" height="55" fill="#FFF4E5" stroke="#F5A623" stroke-width="2" rx="8"/>
+              <text x="80" y="408" font-family="Arial" font-size="14" font-weight="700" fill="#6B4A00">⚠ Nigerian passport:</text>
+              <text x="80" y="428" font-family="Arial" font-size="14" fill="#6B4A00">Use the OFFICER lane (right). Hand your passport to the officer when called.</text>
+            </g>
+          </svg>
+          <div class="scene-caption">Have your passport ready in your hand</div>
+        </div>
+        
+        <!-- Scene 4: Down to baggage -->
+        <div class="ascene" id="ascene-4">
+          <svg viewBox="0 0 800 550" xmlns="http://www.w3.org/2000/svg">
+            <rect width="800" height="550" fill="#F4F0FA"/>
+            <rect y="0" width="800" height="200" fill="#E8DFF5"/>
+            <line x1="0" y1="200" x2="800" y2="200" stroke="#9B8FAB" stroke-width="2"/>
+            <rect y="200" width="800" height="350" fill="#D0C5E0"/>
+            <rect x="100" y="30" width="280" height="80" fill="#FFD400" rx="6" stroke="#1F1A2C" stroke-width="3"/>
+            <text x="240" y="68" text-anchor="middle" font-family="Arial" font-size="22" font-weight="800" fill="#1F1A2C">BAGGAGE</text>
+            <text x="240" y="92" text-anchor="middle" font-family="Arial" font-size="22" font-weight="800" fill="#1F1A2C">RECLAIM ↓</text>
+            <g>
+              <polygon points="450,150 720,150 720,400 450,400" fill="#9B8FAB"/>
+              <polygon points="450,150 720,150 680,400 490,400" fill="#7D6E94"/>
+              <g stroke="#1F1A2C" stroke-width="1.5">
+                <line x1="455" y1="180" x2="715" y2="180"/>
+                <line x1="460" y1="220" x2="710" y2="220"/>
+                <line x1="465" y1="260" x2="705" y2="260"/>
+                <line x1="470" y1="300" x2="700" y2="300"/>
+                <line x1="475" y1="340" x2="695" y2="340"/>
+                <line x1="480" y1="380" x2="690" y2="380"/>
+              </g>
+              <text x="585" y="280" text-anchor="middle" font-family="Arial" font-size="50" font-weight="900" fill="#FFD400">↓</text>
+            </g>
+            <g>
+              <rect x="60" y="240" width="320" height="220" fill="#1F1A2C" rx="6"/>
+              <text x="220" y="272" text-anchor="middle" font-family="Arial" font-size="16" font-weight="700" fill="#FFD400">BAGGAGE BELTS</text>
+              <text x="220" y="290" text-anchor="middle" font-family="Arial" font-size="11" fill="#9B8FAB">Find your flight number</text>
+              <line x1="80" y1="300" x2="360" y2="300" stroke="#FFD400" stroke-width="1"/>
+              <g font-family="Arial" font-size="14" fill="white">
+                <text x="80" y="328">BA075 LAGOS</text>
+                <text x="320" y="328" fill="#FFD400" font-weight="700">Belt 5</text>
+                <text x="80" y="358">VS401 JOHANNESBURG</text>
+                <text x="320" y="358" fill="#FFD400" font-weight="700">Belt 3</text>
+                <text x="80" y="388">EK001 DUBAI</text>
+                <text x="320" y="388" fill="#FFD400" font-weight="700">Belt 7</text>
+                <text x="80" y="418">QR001 DOHA</text>
+                <text x="320" y="418" fill="#FFD400" font-weight="700">Belt 2</text>
+                <text x="80" y="448">DL003 ATLANTA</text>
+                <text x="320" y="448" fill="#FFD400" font-weight="700">Belt 4</text>
+              </g>
+            </g>
+            <circle cx="350" cy="326" r="14" fill="none" stroke="#2E8B3D" stroke-width="3">
+              <animate attributeName="r" values="14;20;14" dur="1.5s" repeatCount="indefinite"/>
+            </circle>
+          </svg>
+          <div class="scene-caption">Find your flight number, note the belt number</div>
+        </div>
+        
+        <!-- Scene 5: Trolley + Carousel -->
+        <div class="ascene" id="ascene-5">
+          <svg viewBox="0 0 800 550" xmlns="http://www.w3.org/2000/svg">
+            <rect width="800" height="550" fill="#E8DFF5"/>
+            <rect y="430" width="800" height="120" fill="#A892C0"/>
+            <rect x="320" y="30" width="160" height="60" fill="#1F1A2C" rx="6"/>
+            <text x="400" y="58" text-anchor="middle" font-family="Arial" font-size="14" fill="#9B8FAB">BELT</text>
+            <text x="400" y="82" text-anchor="middle" font-family="Arial" font-size="28" font-weight="800" fill="#FFD400">5</text>
+            <ellipse cx="400" cy="320" rx="280" ry="80" fill="#3D2D5A" stroke="#1F1A2C" stroke-width="3"/>
+            <ellipse cx="400" cy="320" rx="240" ry="55" fill="#5A4475"/>
+            <g stroke="#1F1A2C" stroke-width="1.5" fill="none" opacity="0.5">
+              <ellipse cx="400" cy="320" rx="260" ry="68"/>
+              <ellipse cx="400" cy="320" rx="220" ry="52"/>
+            </g>
+            <g>
+              <rect x="180" y="295" width="50" height="35" fill="#D32F2F" rx="3"/>
+              <rect x="182" y="290" width="46" height="6" fill="#1F1A2C" rx="2"/>
+              <rect x="200" y="285" width="10" height="8" fill="#1F1A2C"/>
+              <rect x="320" y="295" width="55" height="38" fill="#1A73E8" rx="3"/>
+              <rect x="322" y="290" width="51" height="6" fill="#1F1A2C" rx="2"/>
+              <rect x="450" y="295" width="60" height="40" fill="#4B286D" rx="3"/>
+              <rect x="452" y="290" width="56" height="6" fill="#1F1A2C" rx="2"/>
+              <rect x="475" y="285" width="10" height="8" fill="#1F1A2C"/>
+              <circle cx="480" cy="315" r="22" fill="none" stroke="#2E8B3D" stroke-width="3">
+                <animate attributeName="r" values="22;28;22" dur="1.5s" repeatCount="indefinite"/>
+              </circle>
+              <rect x="570" y="298" width="48" height="32" fill="#34A853" rx="3"/>
+              <rect x="572" y="293" width="44" height="6" fill="#1F1A2C" rx="2"/>
+            </g>
+            <g transform="translate(60, 150)">
+              <text x="50" y="0" text-anchor="middle" font-family="Arial" font-size="14" font-weight="700" fill="#4B286D">TROLLEYS</text>
+              <text x="50" y="16" text-anchor="middle" font-family="Arial" font-size="12" fill="#2E8B3D" font-weight="700">FREE</text>
+              <g>
+                <rect x="10" y="30" width="80" height="50" fill="none" stroke="#4B286D" stroke-width="2" rx="3"/>
+                <rect x="14" y="34" width="72" height="42" fill="none" stroke="#4B286D" stroke-width="2" rx="3"/>
+                <line x1="20" y1="80" x2="20" y2="120" stroke="#4B286D" stroke-width="3"/>
+                <line x1="80" y1="80" x2="80" y2="120" stroke="#4B286D" stroke-width="3"/>
+                <circle cx="20" cy="125" r="6" fill="#1F1A2C"/>
+                <circle cx="80" cy="125" r="6" fill="#1F1A2C"/>
+                <line x1="14" y1="100" x2="86" y2="100" stroke="#4B286D" stroke-width="2"/>
+                <line x1="50" y1="20" x2="50" y2="30" stroke="#4B286D" stroke-width="3"/>
+                <rect x="35" y="14" width="30" height="6" fill="#4B286D" rx="2"/>
+              </g>
+            </g>
+            <g transform="translate(680, 360)">
+              <circle cx="0" cy="-40" r="14" fill="#F5C699"/>
+              <rect x="-12" y="-26" width="24" height="40" fill="#D32F2F" rx="3"/>
+              <rect x="-14" y="14" width="10" height="22" fill="#1F1A2C" rx="2"/>
+              <rect x="4" y="14" width="10" height="22" fill="#1F1A2C" rx="2"/>
+            </g>
+            <g>
+              <rect x="40" y="460" width="720" height="44" fill="#2E8B3D" rx="8"/>
+              <text x="400" y="488" text-anchor="middle" font-family="Arial" font-size="16" font-weight="700" fill="white">✓ Trolleys are FREE — never pay anyone</text>
+            </g>
+          </svg>
+          <div class="scene-caption">Get a trolley first, then wait for your bag</div>
+        </div>
+        
+        <!-- Scene 6: Customs -->
+        <div class="ascene" id="ascene-6">
+          <svg viewBox="0 0 800 550" xmlns="http://www.w3.org/2000/svg">
+            <rect width="800" height="550" fill="#F4F0FA"/>
+            <rect y="430" width="800" height="120" fill="#C5B5D5"/>
+            <rect x="150" y="30" width="500" height="50" fill="#1F1A2C" rx="6"/>
+            <text x="400" y="63" text-anchor="middle" font-family="Arial" font-size="20" font-weight="700" fill="white">CUSTOMS — Choose your channel</text>
+            <g>
+              <rect x="60" y="110" width="320" height="280" fill="#2E8B3D" rx="10"/>
+              <rect x="80" y="130" width="280" height="100" fill="white" rx="6"/>
+              <text x="220" y="170" text-anchor="middle" font-family="Arial" font-size="38" font-weight="800" fill="#2E8B3D">GREEN</text>
+              <text x="220" y="200" text-anchor="middle" font-family="Arial" font-size="14" font-weight="600" fill="#1F1A2C">Nothing to declare</text>
+              <text x="220" y="220" text-anchor="middle" font-family="Arial" font-size="12" fill="#4A4154">Just walk through</text>
+              <text x="220" y="290" text-anchor="middle" font-family="Arial" font-size="60" fill="white">→</text>
+              <text x="220" y="335" text-anchor="middle" font-family="Arial" font-size="16" font-weight="700" fill="white">USE THIS ONE</text>
+              <text x="220" y="358" text-anchor="middle" font-family="Arial" font-size="13" fill="white">For tourist visits</text>
+              <circle cx="350" cy="130" r="22" fill="white"/>
+              <text x="350" y="139" text-anchor="middle" font-family="Arial" font-size="24" font-weight="900" fill="#2E8B3D">✓</text>
+              <rect x="55" y="105" width="330" height="290" fill="none" stroke="#FFD400" stroke-width="4" rx="12">
+                <animate attributeName="stroke-opacity" values="1;0.3;1" dur="1.5s" repeatCount="indefinite"/>
+              </rect>
+            </g>
+            <g opacity="0.85">
+              <rect x="420" y="110" width="320" height="280" fill="#D32F2F" rx="10"/>
+              <rect x="440" y="130" width="280" height="100" fill="white" rx="6"/>
+              <text x="580" y="170" text-anchor="middle" font-family="Arial" font-size="38" font-weight="800" fill="#D32F2F">RED</text>
+              <text x="580" y="200" text-anchor="middle" font-family="Arial" font-size="14" font-weight="600" fill="#1F1A2C">Goods to declare</text>
+              <text x="580" y="220" text-anchor="middle" font-family="Arial" font-size="12" fill="#4A4154">Cash over £10,000, etc.</text>
+              <text x="580" y="335" text-anchor="middle" font-family="Arial" font-size="16" font-weight="700" fill="white">DON'T USE</text>
+              <text x="580" y="358" text-anchor="middle" font-family="Arial" font-size="13" fill="white">Not for her</text>
+              <circle cx="710" cy="130" r="22" fill="white"/>
+              <text x="710" y="139" text-anchor="middle" font-family="Arial" font-size="22" font-weight="900" fill="#D32F2F">✕</text>
+            </g>
+            <g transform="translate(220, 470)">
+              <circle cx="0" cy="-26" r="11" fill="#F5C699"/>
+              <rect x="-9" y="-15" width="18" height="28" fill="#5B6BC0" rx="2"/>
+              <rect x="14" y="-8" width="40" height="20" fill="none" stroke="#1F1A2C" stroke-width="1.5" rx="2"/>
+              <rect x="18" y="-18" width="32" height="14" fill="#4B286D" rx="2"/>
+              <circle cx="22" cy="18" r="3" fill="#1F1A2C"/>
+              <circle cx="50" cy="18" r="3" fill="#1F1A2C"/>
+            </g>
+          </svg>
+          <div class="scene-caption">Walk straight through GREEN — don't stop unless asked</div>
+        </div>
+        
+        <!-- Scene 7: Arrivals Hall -->
+        <div class="ascene" id="ascene-7">
+          <svg viewBox="0 0 800 550" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="arrhall" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#FFFFFF"/>
+                <stop offset="100%" stop-color="#F4F0FA"/>
+              </linearGradient>
+            </defs>
+            <rect width="800" height="550" fill="url(#arrhall)"/>
+            <rect y="450" width="800" height="100" fill="#D0C5E0"/>
+            <rect x="240" y="20" width="320" height="60" fill="#4B286D" rx="6"/>
+            <text x="400" y="58" text-anchor="middle" font-family="Arial" font-size="22" font-weight="700" fill="white">ARRIVALS HALL</text>
+            <g>
+              <rect x="320" y="100" width="160" height="180" fill="#FFE680" opacity="0.5"/>
+              <rect x="340" y="110" width="120" height="160" fill="#1F1A2C" rx="4"/>
+              <line x1="400" y1="110" x2="400" y2="270" stroke="#9B8FAB" stroke-width="2"/>
+              <text x="400" y="295" text-anchor="middle" font-family="Arial" font-size="13" fill="#6B5F7C">Exit from baggage</text>
+            </g>
+            <g transform="translate(150, 320)">
+              <rect x="-30" y="-90" width="160" height="50" fill="white" stroke="#4B286D" stroke-width="2" rx="4"/>
+              <text x="50" y="-66" text-anchor="middle" font-family="Arial" font-size="14" font-weight="700" fill="#4B286D">WELCOME</text>
+              <text x="50" y="-50" text-anchor="middle" font-family="Arial" font-size="11" fill="#1F1A2C">Mum ❤</text>
+              <circle cx="20" cy="-20" r="14" fill="#8B5A3C"/>
+              <rect x="8" y="-6" width="24" height="40" fill="#D32F2F" rx="3"/>
+              <rect x="6" y="34" width="10" height="22" fill="#1F1A2C" rx="2"/>
+              <rect x="24" y="34" width="10" height="22" fill="#1F1A2C" rx="2"/>
+              <text x="20" y="80" text-anchor="middle" font-family="Arial" font-size="13" font-weight="700" fill="#4B286D">Fatima</text>
+              <circle cx="80" cy="-20" r="14" fill="#8B5A3C"/>
+              <rect x="68" y="-6" width="24" height="40" fill="#1A73E8" rx="3"/>
+              <rect x="66" y="34" width="10" height="22" fill="#1F1A2C" rx="2"/>
+              <rect x="84" y="34" width="10" height="22" fill="#1F1A2C" rx="2"/>
+              <text x="80" y="80" text-anchor="middle" font-family="Arial" font-size="13" font-weight="700" fill="#4B286D">Nasirudeen</text>
+              <rect x="-40" y="-100" width="180" height="200" fill="none" stroke="#2E8B3D" stroke-width="3" rx="8" stroke-dasharray="6,4">
+                <animate attributeName="stroke-dashoffset" from="0" to="20" dur="1s" repeatCount="indefinite"/>
+              </rect>
+            </g>
+            <g opacity="0.4">
+              <g transform="translate(550, 340)">
+                <circle cx="0" cy="-15" r="12" fill="#6B5F7C"/>
+                <rect x="-10" y="-3" width="20" height="35" fill="#6B5F7C" rx="2"/>
+              </g>
+              <g transform="translate(610, 350)">
+                <circle cx="0" cy="-15" r="12" fill="#6B5F7C"/>
+                <rect x="-10" y="-3" width="20" height="35" fill="#6B5F7C" rx="2"/>
+              </g>
+              <g transform="translate(680, 345)">
+                <circle cx="0" cy="-15" r="12" fill="#6B5F7C"/>
+                <rect x="-10" y="-3" width="20" height="35" fill="#6B5F7C" rx="2"/>
+              </g>
+            </g>
+            <g transform="translate(420, 380)">
+              <circle cx="0" cy="-30" r="13" fill="#8B5A3C"/>
+              <rect x="-12" y="-17" width="24" height="36" fill="#4B286D" rx="3"/>
+              <rect x="-14" y="19" width="10" height="22" fill="#1F1A2C" rx="2"/>
+              <rect x="4" y="19" width="10" height="22" fill="#1F1A2C" rx="2"/>
+              <rect x="20" y="-5" width="50" height="25" fill="none" stroke="#1F1A2C" stroke-width="1.5" rx="2"/>
+              <rect x="25" y="-18" width="40" height="14" fill="#4B286D" rx="2"/>
+              <circle cx="28" cy="22" r="3" fill="#1F1A2C"/>
+              <circle cx="62" cy="22" r="3" fill="#1F1A2C"/>
+            </g>
+            <text x="290" y="380" text-anchor="middle" font-family="Arial" font-size="34">❤</text>
+          </svg>
+          <div class="scene-caption">Fatima &amp; Nasirudeen will be just past the exit doors</div>
+        </div>
+        
+        <!-- Scene 8: Help -->
+        <div class="ascene" id="ascene-8">
+          <svg viewBox="0 0 800 550" xmlns="http://www.w3.org/2000/svg">
+            <rect width="800" height="550" fill="#F4F0FA"/>
+            <text x="400" y="55" text-anchor="middle" font-family="Arial" font-size="24" font-weight="700" fill="#4B286D">If you need help anywhere</text>
+            <g transform="translate(400, 280)">
+              <ellipse cx="0" cy="100" rx="90" ry="20" fill="#D0C5E0" opacity="0.5"/>
+              <rect x="-25" y="40" width="22" height="60" fill="#1F1A2C" rx="3"/>
+              <rect x="3" y="40" width="22" height="60" fill="#1F1A2C" rx="3"/>
+              <rect x="-40" y="-30" width="80" height="80" fill="#4B286D" rx="6"/>
+              <circle cx="-20" cy="-5" r="8" fill="white"/>
+              <text x="-20" y="-1" text-anchor="middle" font-size="9" font-weight="700" fill="#4B286D">H</text>
+              <text x="10" y="-3" font-size="9" font-weight="700" fill="white">Heathrow</text>
+              <text x="10" y="8" font-size="7" fill="white">Help</text>
+              <line x1="-15" y1="-30" x2="-5" y2="0" stroke="#FFD400" stroke-width="2"/>
+              <line x1="15" y1="-30" x2="5" y2="0" stroke="#FFD400" stroke-width="2"/>
+              <rect x="-8" y="0" width="16" height="20" fill="white" stroke="#FFD400" stroke-width="1.5"/>
+              <circle cx="0" cy="-50" r="20" fill="#F5C699"/>
+              <path d="M -20 -55 Q 0 -75 20 -55 Q 20 -65 0 -68 Q -20 -65 -20 -55 Z" fill="#3D2D5A"/>
+              <path d="M -8 -45 Q 0 -38 8 -45" stroke="#1F1A2C" stroke-width="2" fill="none"/>
+              <rect x="-50" y="-10" width="14" height="50" fill="#4B286D" rx="3" transform="rotate(15 -43 15)"/>
+              <rect x="36" y="-10" width="14" height="50" fill="#4B286D" rx="3" transform="rotate(-15 43 15)"/>
+            </g>
+            <g>
+              <text x="400" y="155" text-anchor="middle" font-family="Arial" font-size="32" fill="#4B286D">↓</text>
+              <text x="400" y="130" text-anchor="middle" font-family="Arial" font-size="18" font-weight="700" fill="#4B286D">Look for staff in PURPLE</text>
+            </g>
+            <g>
+              <rect x="50" y="430" width="220" height="90" fill="white" stroke="#4B286D" stroke-width="2" rx="8"/>
+              <text x="160" y="455" text-anchor="middle" font-family="Arial" font-size="14" font-weight="700" fill="#4B286D">📞 Heathrow Help</text>
+              <text x="160" y="479" text-anchor="middle" font-family="Arial" font-size="15" font-weight="700" fill="#1F1A2C">0808 189 1365</text>
+              <text x="160" y="500" text-anchor="middle" font-family="Arial" font-size="11" fill="#6B5F7C">Free from any UK phone</text>
+            </g>
+            <g>
+              <rect x="290" y="430" width="220" height="90" fill="white" stroke="#4B286D" stroke-width="2" rx="8"/>
+              <text x="400" y="455" text-anchor="middle" font-family="Arial" font-size="14" font-weight="700" fill="#4B286D">🗣 What to say</text>
+              <text x="400" y="479" text-anchor="middle" font-family="Arial" font-size="14" font-style="italic" fill="#1F1A2C">"Excuse me,</text>
+              <text x="400" y="498" text-anchor="middle" font-family="Arial" font-size="14" font-style="italic" fill="#1F1A2C">I'm lost"</text>
+            </g>
+            <g>
+              <rect x="530" y="430" width="220" height="90" fill="white" stroke="#4B286D" stroke-width="2" rx="8"/>
+              <text x="640" y="455" text-anchor="middle" font-family="Arial" font-size="14" font-weight="700" fill="#4B286D">📍 Information desk</text>
+              <text x="640" y="479" text-anchor="middle" font-family="Arial" font-size="12" fill="#1F1A2C">In baggage hall</text>
+              <text x="640" y="498" text-anchor="middle" font-family="Arial" font-size="12" fill="#1F1A2C">and arrivals hall</text>
+            </g>
+          </svg>
+          <div class="scene-caption">Staff in purple are paid to help. Don't be shy.</div>
+        </div>
+        
+      </div>
+      
+      <div class="mini-map">
+        <div class="mini-map-title">Your journey through Terminal 3</div>
+        <div class="map-flow" id="mapFlow"></div>
+      </div>
+      
+      <div class="help-banner">
+        <div class="help-banner-icon">💜</div>
+        <div>
+          <strong>Lost or worried? Look for purple.</strong>
+          Heathrow staff wear bright purple. Walk up to any of them and say "I'm lost." They will help you.
+        </div>
+      </div>
+      
+      <div class="nav">
+        <button class="nav-btn secondary" id="airBackBtn">← Back</button>
+        <button class="nav-btn primary" id="airNextBtn">Next →</button>
+        <button class="nav-btn secondary" id="airRestartBtn" style="flex: 0.6">↻</button>
+      </div>
+    </div>
+    
+  </div>
+
+<script>
+  // ============ VIEW SWITCHING ============
+  function showView(name) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.getElementById('view-' + name).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  
+  document.querySelectorAll('[data-go]').forEach(btn => {
+    btn.addEventListener('click', () => showView(btn.dataset.go));
+  });
+  
+  // ============ WIFI TUTORIAL ============
+  const wifiSteps = [
+    {
+      scene: 'home',
+      title: 'Welcome 👋',
+      body: "I'll show you how to connect to free WiFi at Heathrow. We'll go step by step. When you're ready, tap <strong>Next</strong> below.",
+      tip: "You can practice this as many times as you like before you travel."
+    },
+    {
+      scene: 'home',
+      title: 'Step 1: Swipe down from the top',
+      body: "On your home screen, place your finger near the top of the screen and slide it <strong>down</strong>. This opens the Quick Settings panel.",
+      showSwipeHint: true
+    },
+    {
+      scene: 'quicksettings',
+      title: 'Step 2: Tap and hold "Internet"',
+      body: "Find the <strong>Internet</strong> button (with the WiFi icon). Press and hold it for 1 second.",
+      highlight: 'qs-internet'
+    },
+    {
+      scene: 'wifi',
+      title: 'Step 3: Tap "_Heathrow Wi-Fi"',
+      body: "A list of networks appears. Tap <strong>_Heathrow Wi-Fi</strong> at the top.",
+      tip: "⚠ Important: the real network has an underscore '_' at the start. If you see 'HeathrowWifi' without it, that's a fake. Avoid it.",
+      tipType: 'warn',
+      highlight: 'net-heathrow'
+    },
+    {
+      scene: 'connecting',
+      title: 'Step 4: Wait a moment',
+      body: "The phone is connecting and opening the sign-in page automatically. Just wait."
+    },
+    {
+      scene: 'captive',
+      title: 'Step 5: Type your email and accept terms',
+      body: "Type your <strong>email address</strong>, then tap the small box to accept the terms.",
+      action: 'fillEmail'
+    },
+    {
+      scene: 'captive',
+      title: 'Step 6: Tap Connect',
+      body: "Now tap the big purple <strong>Connect</strong> button.",
+      highlight: 'connectBtn',
+      action: 'enableConnect'
+    },
+    {
+      scene: 'success',
+      title: "Done! You're online ✓",
+      body: "That's it! You can now use WhatsApp, browse, or call us. If you get logged out, just open Chrome and the sign-in page will appear again.",
+      tip: "Practice a few more times before your flight to feel confident."
+    }
+  ];
+  
+  let wifiStep = 0;
+  
+  function clearWifiHighlights() {
+    document.querySelectorAll('#view-wifi .highlight').forEach(el => el.classList.remove('highlight'));
+  }
+  
+  function showPscene(id) {
+    document.querySelectorAll('.pscene').forEach(s => s.classList.remove('active'));
+    document.getElementById('pscene-' + id).classList.add('active');
+  }
+  
+  function animateType(elId, text) {
+    const el = document.getElementById(elId);
+    el.value = '';
+    let i = 0;
+    const interval = setInterval(() => {
+      if (i >= text.length) { clearInterval(interval); return; }
+      el.value += text[i]; i++;
+    }, 70);
+  }
+  
+  function renderWifi() {
+    const step = wifiSteps[wifiStep];
+    document.getElementById('wifiStepBadge').textContent = `Step ${wifiStep + 1} of ${wifiSteps.length}`;
+    document.getElementById('wifiStepProgress').style.width = `${((wifiStep + 1) / wifiSteps.length) * 100}%`;
+    document.getElementById('wifiInstrTitle').textContent = step.title;
+    document.getElementById('wifiInstrBody').innerHTML = step.body;
+    
+    const tipEl = document.getElementById('wifiInstrTip');
+    if (step.tip) {
+      tipEl.textContent = step.tip;
+      tipEl.className = 'instr-tip' + (step.tipType === 'warn' ? ' warn' : '');
+      tipEl.style.display = 'block';
+    } else {
+      tipEl.style.display = 'none';
+    }
+    
+    showPscene(step.scene);
+    clearWifiHighlights();
+    
+    if (step.scene !== 'captive') {
+      document.getElementById('emailInput').value = '';
+      document.getElementById('termsCheckbox').classList.remove('checked');
+      document.getElementById('connectBtn').disabled = true;
+    }
+    
+    document.getElementById('swipeHint').style.display = step.showSwipeHint ? 'block' : 'none';
+    
+    if (step.highlight) {
+      const target = document.getElementById(step.highlight);
+      if (target) target.classList.add('highlight');
+    }
+    
+    if (step.action === 'fillEmail') {
+      setTimeout(() => animateType('emailInput', 'mum.example@gmail.com'), 600);
+      setTimeout(() => document.getElementById('termsCheckbox').classList.add('checked'), 2400);
+    }
+    
+    if (step.action === 'enableConnect') {
+      document.getElementById('emailInput').value = 'mum.example@gmail.com';
+      document.getElementById('termsCheckbox').classList.add('checked');
+      document.getElementById('connectBtn').disabled = false;
+    }
+    
+    document.getElementById('wifiBackBtn').disabled = wifiStep === 0;
+    document.getElementById('wifiNextBtn').textContent = wifiStep === wifiSteps.length - 1 ? 'Finish ✓' : 'Next →';
+  }
+  
+  document.getElementById('wifiNextBtn').addEventListener('click', () => {
+    if (wifiStep < wifiSteps.length - 1) wifiStep++;
+    else wifiStep = 0;
+    renderWifi();
+  });
+  document.getElementById('wifiBackBtn').addEventListener('click', () => {
+    if (wifiStep > 0) { wifiStep--; renderWifi(); }
+  });
+  document.getElementById('wifiRestartBtn').addEventListener('click', () => {
+    wifiStep = 0; renderWifi();
+  });
+  
+  // ============ AIRPORT TUTORIAL ============
+  const airSteps = [
+    {
+      scene: 1,
+      title: "You've landed at Terminal 3",
+      time: "5 min",
+      body: "Welcome to Heathrow. Your flight has arrived. Stay seated until the seatbelt sign turns off, then collect your bag from the locker and follow the other passengers off the plane.",
+      tip: "Have your passport and boarding pass ready in your hand. You'll need them in about 10 minutes.",
+      mapLabel: "Plane"
+    },
+    {
+      scene: 2,
+      title: "Follow the YELLOW signs",
+      time: "5-10 min",
+      body: "After leaving the plane, you'll walk through long corridors. Look up at the signs. Follow the <span class='yellow'>YELLOW</span> ones that say <strong>'Arrivals'</strong> or <strong>'Baggage Reclaim'</strong>. Do NOT follow the <strong>PURPLE</strong> 'Flight Connections' signs.",
+      tip: "Most people from your flight will be going the same way. If unsure, walk with the crowd, but always check the yellow signs above.",
+      tipType: "warn",
+      mapLabel: "Corridors"
+    },
+    {
+      scene: 3,
+      title: "UK Border (passport check)",
+      time: "15-30 min",
+      body: "You'll arrive at a big hall with rows of gates. Follow signs to <strong>'All Other Passports'</strong> and join the queue. When you reach the desk, hand your passport to the officer. They may ask: where are you staying, how long, why are you visiting. Answer simply.",
+      tip: "Have your visa, invitation letter and Fatima's address ready in case the officer asks.",
+      mapLabel: "Border"
+    },
+    {
+      scene: 4,
+      title: "Go down to baggage reclaim",
+      time: "2 min",
+      body: "After passport check, follow signs to <strong>'Baggage Reclaim'</strong>. You'll go down an escalator. Find <strong>your flight number</strong> on the big black screen. Note the belt number next to it.",
+      tip: "Your flight number is on your boarding pass. It looks like BA075 or VS411. Write it down before the flight.",
+      mapLabel: "Down"
+    },
+    {
+      scene: 5,
+      title: "Get a free trolley, then wait for your bag",
+      time: "10-30 min",
+      body: "Trolleys are <strong>FREE</strong>. Pull one from the stack. Then walk to your belt number and wait. Bags come round on the moving belt. Lift yours onto the trolley.",
+      tip: "If anyone asks you to pay for a trolley, say no and walk away. Real Heathrow trolleys are always free.",
+      tipType: "warn",
+      mapLabel: "Bags"
+    },
+    {
+      scene: 6,
+      title: "Walk through the GREEN channel",
+      time: "1 min",
+      body: "Push your trolley toward the exit. You'll see two paths. Walk through the <span class='green'>GREEN</span> channel that says <strong>'Nothing to declare'</strong>. Do NOT use the <span class='red'>RED</span> channel.",
+      tip: "Just keep walking through the green path. Don't stop unless an officer asks. They rarely do.",
+      mapLabel: "Customs"
+    },
+    {
+      scene: 7,
+      title: "Walk into Arrivals — meet Fatima &amp; Nasirudeen",
+      time: "5 min",
+      body: "The doors open into the big <strong>Arrivals Hall</strong>. People wait on the other side. Look for Fatima and Nasirudeen. They'll be looking for you too.",
+      tip: "If you don't see them straight away, stand near the exit and don't wander. Connect to the free WiFi (you know how) and message them on WhatsApp.",
+      mapLabel: "Arrivals"
+    },
+    {
+      scene: 8,
+      title: "If anything goes wrong",
+      time: "Anytime",
+      body: "Heathrow staff wear bright <strong>purple shirts and jackets</strong>. They are everywhere and they are paid to help. Walk up to any of them and say <em>\"Excuse me, I am lost\"</em> or <em>\"I need help.\"</em>",
+      tip: "Information desks are also in the baggage hall and arrivals hall. The free help line is 0808 189 1365.",
+      mapLabel: "Help"
+    }
+  ];
+  
+  let airStep = 0;
+  
+  function buildMiniMap() {
+    const flow = document.getElementById('mapFlow');
+    flow.innerHTML = '';
+    airSteps.forEach((step, i) => {
+      const node = document.createElement('div');
+      node.className = 'map-node';
+      if (i < airStep) node.classList.add('done');
+      if (i === airStep) node.classList.add('current');
+      node.innerHTML = `<div class="map-dot">${i + 1}</div><div class="map-label">${step.mapLabel}</div>`;
+      flow.appendChild(node);
+      if (i < airSteps.length - 1) {
+        const line = document.createElement('div');
+        line.className = 'map-line';
+        if (i < airStep) line.classList.add('done');
+        flow.appendChild(line);
+      }
+    });
+  }
+  
+  function renderAirport() {
+    const step = airSteps[airStep];
+    document.getElementById('airStepBadge').textContent = `Step ${airStep + 1} of ${airSteps.length}`;
+    document.getElementById('airStepTime').innerHTML = `⏱ ${step.time}`;
+    document.getElementById('airStepProgress').style.width = `${((airStep + 1) / airSteps.length) * 100}%`;
+    document.getElementById('airInstrTitle').textContent = step.title;
+    document.getElementById('airInstrBody').innerHTML = step.body;
+    
+    const tipEl = document.getElementById('airInstrTip');
+    if (step.tip) {
+      tipEl.textContent = step.tip;
+      tipEl.className = 'instr-tip' + (step.tipType === 'warn' ? ' warn' : '');
+      tipEl.style.display = 'block';
+    } else {
+      tipEl.style.display = 'none';
+    }
+    
+    document.querySelectorAll('.ascene').forEach(s => s.classList.remove('active'));
+    document.getElementById('ascene-' + step.scene).classList.add('active');
+    
+    buildMiniMap();
+    document.getElementById('airBackBtn').disabled = airStep === 0;
+    document.getElementById('airNextBtn').textContent = airStep === airSteps.length - 1 ? 'Start over ↻' : 'Next →';
+  }
+  
+  document.getElementById('airNextBtn').addEventListener('click', () => {
+    if (airStep < airSteps.length - 1) airStep++;
+    else airStep = 0;
+    renderAirport();
+  });
+  document.getElementById('airBackBtn').addEventListener('click', () => {
+    if (airStep > 0) { airStep--; renderAirport(); }
+  });
+  document.getElementById('airRestartBtn').addEventListener('click', () => {
+    airStep = 0; renderAirport();
+  });
+  document.getElementById('mapFlow').addEventListener('click', (e) => {
+    const node = e.target.closest('.map-node');
+    if (node) {
+      const allNodes = Array.from(document.querySelectorAll('.map-node'));
+      airStep = allNodes.indexOf(node);
+      renderAirport();
+    }
+  });
+  
+  // ============ PWA / OFFLINE SETUP ============
+  
+  // 1. Inject Web App Manifest dynamically (so file works as a single artifact)
+  (function setupManifest() {
+    const iconSvg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" rx="100" fill="%234B286D"/><text x="256" y="350" text-anchor="middle" font-size="280" fill="white" font-family="Arial">✈</text></svg>';
+    const iconUrl = 'data:image/svg+xml,' + encodeURIComponent(iconSvg.replace(/%23/g, '#'));
+    
+    const manifest = {
+      name: "Mum's Heathrow Helper",
+      short_name: "Heathrow Helper",
+      description: "WiFi & arrival guide for Heathrow Terminal 3",
+      start_url: "./",
+      display: "standalone",
+      orientation: "portrait",
+      background_color: "#FAF7FF",
+      theme_color: "#4B286D",
+      icons: [
+        { src: iconUrl, sizes: "192x192", type: "image/svg+xml", purpose: "any" },
+        { src: iconUrl, sizes: "512x512", type: "image/svg+xml", purpose: "any maskable" }
+      ]
+    };
+    
+    const blob = new Blob([JSON.stringify(manifest)], { type: 'application/manifest+json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('link');
+    link.rel = 'manifest';
+    link.href = url;
+    document.head.appendChild(link);
+    
+    // Apple touch icon
+    const appleIcon = document.createElement('link');
+    appleIcon.rel = 'apple-touch-icon';
+    appleIcon.href = iconUrl;
+    document.head.appendChild(appleIcon);
+  })();
+  
+  // 2. Register Service Worker for offline caching (works when hosted on a server)
+  if ('serviceWorker' in navigator) {
+    const swCode = `
+      const CACHE = 'heathrow-helper-v1';
+      const ASSETS = ['./', './index.html'];
+      
+      self.addEventListener('install', e => {
+        self.skipWaiting();
+        e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS).catch(() => {})));
+      });
+      
+      self.addEventListener('activate', e => {
+        e.waitUntil(self.clients.claim());
+      });
+      
+      self.addEventListener('fetch', e => {
+        if (e.request.method !== 'GET') return;
+        e.respondWith(
+          caches.match(e.request).then(cached => {
+            return cached || fetch(e.request).then(res => {
+              const copy = res.clone();
+              caches.open(CACHE).then(c => c.put(e.request, copy)).catch(() => {});
+              return res;
+            }).catch(() => caches.match('./'));
+          })
+        );
+      });
+    `;
+    
+    try {
+      const swBlob = new Blob([swCode], { type: 'application/javascript' });
+      const swUrl = URL.createObjectURL(swBlob);
+      navigator.serviceWorker.register(swUrl).catch(() => {
+        // SW registration may fail in iframe contexts (like the artifact preview)
+        // It will work properly when deployed as a standalone site
+      });
+    } catch (err) {
+      // Service worker not supported, continue without it
+    }
+  }
+  
+  // 3. Handle install prompt (PWA install)
+  let deferredPrompt = null;
+  
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+    document.getElementById('installTitle').textContent = 'Install on home screen';
+    document.getElementById('installDesc').textContent = 'Tap to install — works without internet';
+  });
+  
+  window.addEventListener('appinstalled', () => {
+    document.getElementById('installBanner').classList.add('installed');
+    document.getElementById('installTitle').textContent = '✓ Installed for offline use';
+    document.getElementById('installDesc').textContent = 'Find the app icon on your home screen';
+    deferredPrompt = null;
+    try { localStorage.setItem('heathrow-installed', '1'); } catch (e) {}
+  });
+  
+  // Check if already installed/standalone
+  if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+    const banner = document.getElementById('installBanner');
+    if (banner) {
+      banner.classList.add('installed');
+      document.getElementById('installTitle').textContent = '✓ Running offline-ready';
+      document.getElementById('installDesc').textContent = "You're using the installed app";
+    }
+  } else {
+    try {
+      if (localStorage.getItem('heathrow-installed') === '1') {
+        const banner = document.getElementById('installBanner');
+        if (banner) {
+          banner.classList.add('installed');
+          document.getElementById('installTitle').textContent = '✓ Already installed';
+          document.getElementById('installDesc').textContent = 'Open from your home screen for offline use';
+        }
+      }
+    } catch (e) {}
+  }
+  
+  // 4. Install banner click handler
+  document.getElementById('installBanner').addEventListener('click', async () => {
+    const banner = document.getElementById('installBanner');
+    if (banner.classList.contains('installed')) return;
+    
+    if (deferredPrompt) {
+      // Chrome/Android install prompt
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        try { localStorage.setItem('heathrow-installed', '1'); } catch (e) {}
+      }
+      deferredPrompt = null;
+    } else {
+      // Show manual instructions modal (iOS, or browsers without prompt)
+      showInstallModal();
+    }
+  });
+  
+  function showInstallModal() {
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const modal = document.createElement('div');
+    modal.className = 'modal-overlay active';
+    modal.innerHTML = `
+      <div class="modal">
+        <h2>📲 Save for offline use</h2>
+        <p>Add this app to your home screen so it works at the airport without WiFi.</p>
+        <div class="modal-steps">
+          ${isIOS ? `
+            <div class="modal-step"><div class="modal-step-num">1</div><div>Tap the <strong>Share button</strong> at the bottom of Safari (the square with arrow up)</div></div>
+            <div class="modal-step"><div class="modal-step-num">2</div><div>Scroll down and tap <strong>"Add to Home Screen"</strong></div></div>
+            <div class="modal-step"><div class="modal-step-num">3</div><div>Tap <strong>Add</strong> in the top right</div></div>
+          ` : `
+            <div class="modal-step"><div class="modal-step-num">1</div><div>Tap the <strong>three dots ⋮</strong> at the top right of Chrome</div></div>
+            <div class="modal-step"><div class="modal-step-num">2</div><div>Tap <strong>"Add to home screen"</strong> or <strong>"Install app"</strong></div></div>
+            <div class="modal-step"><div class="modal-step-num">3</div><div>Tap <strong>Install</strong> or <strong>Add</strong></div></div>
+          `}
+        </div>
+        <p style="font-size: 14px; color: #6B5F7C;">Once added, an icon appears on the home screen. Tap it to open the app — even with no internet.</p>
+        <button class="modal-close">Got it</button>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    modal.querySelector('.modal-close').addEventListener('click', () => modal.remove());
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
+  }
+  
+  // ============ INIT ============
+  renderWifi();
+  renderAirport();
+</script>
+</body>
+</html>
